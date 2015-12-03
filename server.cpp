@@ -5,6 +5,11 @@
 #define BUF_SIZE 100
 
 int main(){
+    printf("==========================================================\n");
+
+    printf("|This program is wirten by Xuan Li, Zeyu Ni, Shuo Zhang  |\n");
+    printf("|This program  using socket lib and tcp/ip portocol      |\n");
+    printf("==========================================================\n");
     WSADATA wsaData;
 
         if(WSAStartup(MAKEWORD(2,2),&wsaData)!=0)
@@ -22,7 +27,7 @@ int main(){
         }
     //bind socket
     sockaddr_in sockAddr;
-    memset(&sockAddr, 0, sizeof(sockAddr));  /
+    memset(&sockAddr, 0, sizeof(sockAddr));
     sockAddr.sin_family = AF_INET;  //using ipv4 adress
     sockAddr.sin_addr.s_addr =INADDR_ANY;
     sockAddr.sin_port = htons(5000);  //set the port
