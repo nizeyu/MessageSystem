@@ -3,7 +3,7 @@
   *FileName:  client.cpp
   *Author:  Zeyu Ni
   *Version:  1.0
-  *Date:  2015.12.2
+  *Date:  2015.12.3
   *Description:  // The server program can:
                         1. sent message to server
                         2. sent broadcasting request with messasge to server
@@ -21,6 +21,7 @@ int main(){
     //initialization dll;
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
+    int n = 0;
 
     //send request to server program
     sockaddr_in sockAddr;
@@ -31,22 +32,39 @@ int main(){
 
     char bufSend[BUF_SIZE] = {0};
     char bufRecv[BUF_SIZE] = {0};
-
+    
+    cout << "Please choose which work you want to do:\n";
+    cout << "1--Send Message to Server; 2--Sent Broadcast Request; 3--Send Files\n";
+    cout << "Please input the number: ";
+    cin >> n;
+    
     while(1){
         //create socket
         SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
         connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));
-        //get what the user input and send is to server
-        printf("Input a string: ");
-        gets(bufSend);
-        send(sock, bufSend, strlen(bufSend), 0);
+        if(n == 1){
+           //get what the user input and send is to server
+           printf("Input a string: ");
+           gets(bufSend);
+           send(sock, bufSend, strlen(bufSend), 0); 
+        }
+        
         //recieve what the server send back
         recv(sock, bufRecv, BUF_SIZE, 0);
         //print out the buffer
         printf("accepted client IP:[%s],port:[%d]\n",inet_ntoa(sockAddr.sin_addr),ntohs(sockAddr.sin_port));
         printf("Message form server: %s\n", bufRecv);
+        
+        //Sending data in a loop until reach the end of file
+         char buffer[BUF_SIZE] = {0};  //Buffer Area for file
+         int nCount;
+         while( (nCount = recv(sock, buffer, BUF_SIZE, 0)) > 0 ){
+             fwrite(buffer, nCount, 1, fp);
+         }
+         
 
         memset(bufRecv, 0, BUF_SIZE);  //reset the buffer area
+        fclose(fp);
         closesocket(sock);  //close socket
     }
 
