@@ -16,31 +16,33 @@
 #include <stdlib.h>
 #include <winsock2.h>
 #include <iostream>
+#include <windows.h>
 #pragma comment (lib, "ws2_32.lib")  //load ws2_32.dll
-
 #define BUF_SIZE 100
 
 
 using namespace std;
 // create  receive  message thread
-DWORD WINAPI ClientThread (LPVOID ipParameter)
+DWORD WINAPI ClientThread (LPVOID ssAccept)
     {
-        SOCKET ClientScoket  = (SOCKET)ipParameter;
+        SOCKET sAccept  = (SOCKET)ssAccept;
+        //cout<<sAccept<<endl;
         int RET =  0;
-        char RecvBuffer[100];
-         char sendvBuffer[100];
+        char RecvBuffer[BUF_SIZE];
+         char sendvBuffer[BUF_SIZE];
         while(true){
-        memset(RecvBuffer,0x00,sizeof(RecvBuffer));
-        RET  =  recv(ClientScoket,RecvBuffer,100,0);
+         //memset(RecvBuffer,0x00,sizeof(RecvBuffer));
+       int strLen = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
         if(RET == 0||RET == SOCKET_ERROR)
         {
-            cout<<"failed,exit"<<endl;
-            break;
+
+            cout<<"failed,exit"<<endl;// why?? it always be wrong -1
+            //break;
         }
         cout<<"message is "<<RecvBuffer<<endl;
         printf("Input a string: ");
         gets(sendvBuffer);
-        send(ClientScoket, sendvBuffer, strlen(sendvBuffer), 0);  //send data to client
+        send(sAccept, sendvBuffer, strlen(sendvBuffer), 0);  //send data to client
     }
 
     return 0;
@@ -52,8 +54,9 @@ int main(){
     printf("|This program  using socket lib and tcp/ip portocol      |\n");
     printf("==========================================================\n");
     WSADATA wsaData;
-       HANDLE      hThread =  NULL;
-
+    HANDLE thread[255];    //thread
+    DWORD dwThId[255];    // thread id number
+    int index=0;
         if(WSAStartup(MAKEWORD(2,2),&wsaData)!=0)
         {
             printf("Winsock load failed\n");
@@ -71,7 +74,7 @@ int main(){
     sockaddr_in sockAddr;
     memset(&sockAddr, 0, sizeof(sockAddr));
     sockAddr.sin_family = AF_INET;  //using ipv4 adress
-    sockAddr.sin_addr.s_addr =INADDR_ANY;
+    sockAddr.sin_addr.s_addr =INADDR_ANY;// local
     sockAddr.sin_port = htons(5000);  //set the port
     if( bind(servSock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR))==SOCKET_ERROR)
 	{
@@ -85,10 +88,15 @@ int main(){
 		return 0;
 	}//listen and judge weather it can work
     //revieve the request from client
-    SOCKADDR clntAddr;
-    int nSize = sizeof(SOCKADDR);
+     //4,waiting and accept client connect request...
+    sockaddr_in clntAddr;
+    int nSize = sizeof(clntAddr);
+    char client_ip[20];
+     unsigned client_port=0;
     char buffer[BUF_SIZE] = {0};  //create buffer area
      cout<<"the server has running"<<endl;
+
+     cout<<"server is  listening at port 5000"<<endl;
     while(1){
        sAccept = accept(servSock, (SOCKADDR*)&clntAddr, &nSize);
        if(sAccept==INVALID_SOCKET)
@@ -96,14 +104,20 @@ int main(){
 			printf("accept()failed:%d\n",WSAGetLastError());
 			break;
 		}
-		printf("accepted client IP:[%s],port:[%d]\n",inet_ntoa(sockAddr.sin_addr),ntohs(sockAddr.sin_port));
-		  hThread  = CreateThread(NULL,0,ClientThread,(LPVOID)sAccept,0,NULL);
-		     if(hThread == NULL)
-        {
+
+		//get client ip and port
+        client_port = ntohs(sockAddr.sin_port);
+        //cout<<"client "<<client_ip<<":"<<client_port<<endl;   // some wrong in this code
+		printf("accepted client IP:[%s],port:[%d]\n",inet_ntoa(clntAddr.sin_addr),ntohs(sockAddr.sin_port));
+		  thread[index]  = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)ClientThread,(LPVOID)sAccept,0,NULL);
+		     if(thread == NULL)
+            {
            cout<<"creat thread failed"<<endl;
            break;
-        }
-       CloseHandle(hThread);
+            }
+            index++;
+             Sleep(1000);
+       CloseHandle(thread);
       //  int strLen = recv(sAccept, buffer, BUF_SIZE, 0);  //
       //  printf("Message form client: %s\n", buffer);
       //  printf("Input a string: ");
