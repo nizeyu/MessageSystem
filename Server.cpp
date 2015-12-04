@@ -21,7 +21,8 @@
 #pragma warning(disable:4996)
 #pragma comment (lib, "ws2_32.lib")  //load ws2_32.dll
 #define BUF_SIZE 100
-
+  SOCKET clinets[20];
+    int clinetNumber;
 
 using namespace std;
 // create  receive  message thread
@@ -38,15 +39,15 @@ DWORD WINAPI ClientThread (LPVOID ssAccept)
         if(RET == 0||RET == SOCKET_ERROR)
         {
 
-            cout<<"failed,exit"<<endl;// why?? it always be wrong -1
-            //break;
+            //cout<<"failed,exit"<<endl;// why?? it always be wrong -1
+            break;
         }
         cout<<"message is "<<RecvBuffer<<endl;
-        printf("Input a string: ");
-        gets(sendvBuffer);
-        send(sAccept, sendvBuffer, strlen(sendvBuffer), 0);  //send data to client
+
+        send(clinets[1], RecvBuffer, strlen(RecvBuffer), 0);  //send data to client
           memset(sendvBuffer, 0, BUF_SIZE);
     }
+  // closesocket(sAccept);
 
     return 0;
 }
@@ -57,8 +58,8 @@ int main(){
     printf("|This program  using socket lib and tcp/ip portocol      |\n");
     printf("==========================================================\n");
     WSADATA wsaData;
-    HANDLE thread[255];    //thread
-    DWORD dwThId[255];    // thread id number
+    HANDLE WINAPI  thread[255];    //thread
+    DWORD WINAPI dwThId[255];    // thread id number
     int index=0;
         if(WSAStartup(MAKEWORD(2,2),&wsaData)!=0)
         {
@@ -67,6 +68,7 @@ int main(){
         }
         //create socket
         SOCKET        servSock,sAccept;
+
         servSock = socket(AF_INET, SOCK_STREAM, 0);
         if(servSock==INVALID_SOCKET)
         {
@@ -100,8 +102,11 @@ int main(){
      cout<<"the server has running"<<endl;
 
      cout<<"server is  listening at port 5000"<<endl;
+     clinetNumber = 0;
     while(1){
        sAccept = accept(servSock, (SOCKADDR*)&clntAddr, &nSize);
+        clinets[clinetNumber] = sAccept;
+        clinetNumber++;
        if(sAccept==INVALID_SOCKET)
 		{
 			printf("accept()failed:%d\n",WSAGetLastError());
@@ -112,26 +117,27 @@ int main(){
         client_port = ntohs(sockAddr.sin_port);
         //cout<<"client "<<client_ip<<":"<<client_port<<endl;   // some wrong in this code
 		printf("accepted client IP:[%s],port:[%d]\n",inet_ntoa(clntAddr.sin_addr),ntohs(sockAddr.sin_port));
-		  thread[index]  = CreateThread(NULL,0,ClientThread,(LPVOID)sAccept,0,NULL);
-		     if(thread == NULL)
+		 HANDLE WINAPI  hThread  = CreateThread(NULL,0,ClientThread,(LPVOID)sAccept,0,NULL);
+		     if(hThread == NULL)
             {
            cout<<"creat thread failed"<<endl;
            break;
             }
-            index++;
              Sleep(1000);
-       CloseHandle(thread);
+       CloseHandle(hThread);
       //  int strLen = recv(sAccept, buffer, BUF_SIZE, 0);  //
       //  printf("Message form client: %s\n", buffer);
       //  printf("Input a string: ");
        // gets(buffer);
         //send(sAccept, buffer, strlen(buffer), 0);  //send data to client
 
-        closesocket(sAccept);
+
 //close socket
         memset(buffer, 0, BUF_SIZE);  //reset buffer area
+
     }
 //close socket
+  closesocket(sAccept);
     closesocket(servSock);
  //stop using dll
     WSACleanup();
