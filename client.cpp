@@ -1,3 +1,15 @@
+/*********************************************************************************
+  *Copyright    Zeyu Ni
+  *FileName:  client.cpp
+  *Author:  Zeyu Ni
+  *Version:  1.0
+  *Date:  2015.12.2
+  *Description:  // The server program can:
+                        1: sent message to server
+                        2. sent broadcasting request with messasge to server
+                        4. sent file to sevrver and request for resenting to another client
+  *Others:  none
+**********************************************************************************/
 #include <stdio.h>
 #include <WinSock2.h>
 #include <windows.h>
