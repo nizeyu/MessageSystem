@@ -18,6 +18,10 @@
 #define BUF_SIZE 100
 
 int main(){
+    cout << "==========================================================\n";
+    cout << "|This program is wirten by Xuan Li, Zeyu Ni, Shuo Zhang  |\n";
+    cout << "|This program  using socket lib and tcp/ip portocol      |\n";
+    cout << "==========================================================\n";
     //initialization dll;
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
