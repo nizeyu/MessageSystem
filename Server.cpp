@@ -17,6 +17,8 @@
 #include <winsock2.h>
 #include <iostream>
 #include <windows.h>
+
+#pragma warning(disable:4996)
 #pragma comment (lib, "ws2_32.lib")  //load ws2_32.dll
 #define BUF_SIZE 100
 
@@ -31,8 +33,8 @@ DWORD WINAPI ClientThread (LPVOID ssAccept)
         char RecvBuffer[BUF_SIZE];
          char sendvBuffer[BUF_SIZE];
         while(true){
-         //memset(RecvBuffer,0x00,sizeof(RecvBuffer));
-       int strLen = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
+        memset(RecvBuffer, 0x00, BUF_SIZE);
+        RET = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
         if(RET == 0||RET == SOCKET_ERROR)
         {
 
@@ -43,6 +45,7 @@ DWORD WINAPI ClientThread (LPVOID ssAccept)
         printf("Input a string: ");
         gets(sendvBuffer);
         send(sAccept, sendvBuffer, strlen(sendvBuffer), 0);  //send data to client
+          memset(sendvBuffer, 0, BUF_SIZE);
     }
 
     return 0;
@@ -109,7 +112,7 @@ int main(){
         client_port = ntohs(sockAddr.sin_port);
         //cout<<"client "<<client_ip<<":"<<client_port<<endl;   // some wrong in this code
 		printf("accepted client IP:[%s],port:[%d]\n",inet_ntoa(clntAddr.sin_addr),ntohs(sockAddr.sin_port));
-		  thread[index]  = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)ClientThread,(LPVOID)sAccept,0,NULL);
+		  thread[index]  = CreateThread(NULL,0,ClientThread,(LPVOID)sAccept,0,NULL);
 		     if(thread == NULL)
             {
            cout<<"creat thread failed"<<endl;
