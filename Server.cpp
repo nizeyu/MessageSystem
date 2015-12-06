@@ -15,17 +15,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
+#include"Client.h"
 #include <iostream>
 #include <windows.h>
-
+#include<vector>
+#include <string>
+#include <time.h>
 #pragma warning(disable:4996)
 #pragma comment (lib, "ws2_32.lib")  //load ws2_32.dll
 #define BUF_SIZE 100
-  SOCKET clinets[20];
-    int clinetNumber;
 
 using namespace std;
 // create  receive  message thread
+ vector< Client > clients;
 DWORD WINAPI ClientThread (LPVOID ssAccept)
     {
         SOCKET sAccept  = (SOCKET)ssAccept;
@@ -38,13 +40,11 @@ DWORD WINAPI ClientThread (LPVOID ssAccept)
         RET = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
         if(RET == 0||RET == SOCKET_ERROR)
         {
-
-            //cout<<"failed,exit"<<endl;// why?? it always be wrong -1
             break;
         }
         cout<<"message is "<<RecvBuffer<<endl;
 
-        send(clinets[1], RecvBuffer, strlen(RecvBuffer), 0);  //send data to client
+        send(clients[0].getClientSOCKET(), RecvBuffer, strlen(RecvBuffer), 0);  //send data to client
           memset(sendvBuffer, 0, BUF_SIZE);
     }
   // closesocket(sAccept);
@@ -102,17 +102,25 @@ int main(){
      cout<<"the server has running"<<endl;
 
      cout<<"server is  listening at port 5000"<<endl;
-     clinetNumber = 0;
+
     while(1){
        sAccept = accept(servSock, (SOCKADDR*)&clntAddr, &nSize);
-        clinets[clinetNumber] = sAccept;
-        clinetNumber++;
+
        if(sAccept==INVALID_SOCKET)
 		{
 			printf("accept()failed:%d\n",WSAGetLastError());
 			break;
 		}
-
+       Client c;
+        srand( (unsigned int)time(0) );
+       int id = (rand() % (10000+1));
+       c.setClientSOCKET(sAccept);
+       c.setId(id);
+       c.setUserName("aaa");
+        clients.push_back(c);
+        cout << clients.size()<<endl;
+        //    clinets[clinetNumber] = sAccept;
+     //  clinetNumber++;
 		//get client ip and port
         client_port = ntohs(sockAddr.sin_port);
         //cout<<"client "<<client_ip<<":"<<client_port<<endl;   // some wrong in this code
