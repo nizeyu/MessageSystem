@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <WinSock2.h>
 #include <windows.h>
+#include <string>
 #pragma warning(disable:4996)
-#pragma comment(lib, "ws2_32.lib")  //load  ws2_32.dll
-
+#pragma comment(lib, "ws2_32.lib")  //load  ws2_32.dl
 #define BUF_SIZE 100
 HANDLE hMutex;
 DWORD WINAPI Rec(LPVOID ipParameter)
@@ -24,37 +24,35 @@ DWORD WINAPI Rec(LPVOID ipParameter)
 		memset(revBuf, 0, BUF_SIZE);  //reset the buffer area
 		ReleaseMutex(hMutex);
 	}
-	printf("sdadad");
+	printf("thread closed");
 	closesocket(sockClient);//??socket,??????  
 	return 0;
 }
 
 int main() {
-	//initialization dll;
 	WSADATA wsaData;
-	WSAStartup(MAKEWORD(2, 2), &wsaData);
-	//send request to server program
+	WSAStartup(MAKEWORD(2, 2), &wsaData);//initialization dll;
+	char IP[20];
+	printf("input the server IP: (local host is '127.0.0.1')\n");
+	gets_s(IP);
 	sockaddr_in sockAddr;
 	memset(&sockAddr, 0, sizeof(sockAddr));
 	sockAddr.sin_family = AF_INET;
-	sockAddr.sin_addr.s_addr = inet_addr("127.0.0.1");// the server ip address is localhost
+	sockAddr.sin_addr.s_addr = inet_addr(IP);// the server ip address is localhost
 	sockAddr.sin_port = htons(5000);
 	char sendBuf[BUF_SIZE];
-SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-		connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));
+    SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);//create socket
+	connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));//connect to the server
+	HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receive message from server
 	while (1) {
-		//create socket
-		HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);
-		if (hThread == NULL)
-		{
-			CloseHandle(hThread);
-		}
-		printf("Input a string: ");
+		printf("Input a string: (input 'quit' to quit)\n ");
 		gets_s(sendBuf);
-		send(sock, sendBuf, strlen(sendBuf), 0);
-		//get what the user input and send is to server
-		closesocket(sock);  //close socket
+		if (sendBuf[0] == 'q'&&sendBuf[1] == 'u'&&sendBuf[2] == 'i'&&sendBuf[3] == 't') {  break; }//user input quit to quit the message system
+		send(sock, sendBuf, strlen(sendBuf), 0);//get what the user input and send it to server 
 	}
+	/*the following two close function should happen when the client want to end the connect with the server*/
+	CloseHandle(hThread);//close the receive thread .
+	closesocket(sock); //close socket. because hThread uses sock as socket, so if we should close hThread sock first
 	WSACleanup();  //stop using dll
 	return 0;
 }
