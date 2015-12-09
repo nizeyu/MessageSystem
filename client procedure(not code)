@@ -1,0 +1,10 @@
+client procedure:
+1.input the server IP
+2.connect to the server
+3.send the user name to server and receive the number in index from server
+4.open a new thread for receiving message from server
+5.begin a loop
+6.user input what he wants.  send message to another client or ask for a broadcast or transfer a file
+7.due to what the user wants, make a message in fixed format and send to user.
+8.keep loop until user input 'quit' then quit loop
+9.close the thread and all socket.
