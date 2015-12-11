@@ -15,7 +15,7 @@ DWORD WINAPI Rec(LPVOID ipParameter)
 	{
 		WaitForSingleObject(hMutex, INFINITE);
 		memset(revBuf, 0, BUF_SIZE);
-		byte = recv(sockClient, revBuf, BUF_SIZE , 0);//???????????  
+		byte = recv(sockClient, revBuf, BUF_SIZE , 0);//receive the data from Server  
 		printf("Message form server: %s\n", revBuf);
 		if (byte <= 0)
 		{
@@ -25,7 +25,7 @@ DWORD WINAPI Rec(LPVOID ipParameter)
 		ReleaseMutex(hMutex);
 	}
 	printf("thread closed");
-	closesocket(sockClient);//??socket,??????  
+	closesocket(sockClient);//close socket for Client  
 	return 0;
 }
 
