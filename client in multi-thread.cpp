@@ -44,6 +44,13 @@ int main() {
     SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);//create socket
 	connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));//connect to the server
 	HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receive message from server
+	/*
+	1.ask to input username and send to server.
+	2.receive a clientnumber from server
+	3.inpunt 1/2/3 represent send message or ask for broad cast or file transfer
+	while(2)
+	while(3)
+	*/
 	while (1) {
 		printf("Input a string: (input 'quit' to quit)\n ");
 		gets_s(sendBuf);
