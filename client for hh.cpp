@@ -1,4 +1,34 @@
 #include "Client.h"
+SOCKET getClientSOCKET(){
+        return clientSOCKET;
+    }
+    void setClientSOCKET(SOCKET s){
+        clientSOCKET = s;
+    }
+   int  getId(){
+       return id;
+    }
+    void setId(int ids){
+        id = ids;
+
+    }
+    string getUsername(){
+        return username;
+    }
+    void setUserName(string name)
+    {
+        username = name;
+    }
+    Client(SOCKET s,string name,int ids) {
+        clientSOCKET = s;
+        username = name;
+        id = ids;
+    }
+       Client::Client() {
+
+    }
+         ~Client() {
+         }
 
 
 #define BUF_SIZE 100
