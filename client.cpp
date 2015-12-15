@@ -14,10 +14,16 @@
 #include <WinSock2.h>
 #include <windows.h>
 #include <iostream>
+#include <string.h>                              // for memset
+#include <stdlib.h>                             // for exit
+#pragma warning(disable:4996)
 #pragma comment(lib, "ws2_32.lib")  //loading  ws2_32.dll
 
-#define BUF_SIZE 100
+#define BUF_SIZE 1024
+#define FILE_NAME_MAX_SIZE            512
 using namespace std;
+
+
 
 HANDLE hMutex;
 DWORD WINAPI Rec(LPVOID ipParameter)
@@ -43,8 +49,6 @@ DWORD WINAPI Rec(LPVOID ipParameter)
 	printf("thread closed");
 	closesocket(sockClient);//closing socket for Client
 	return 0;
-
-
 }
 
 int main(){
@@ -67,19 +71,91 @@ int main(){
 
     SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);//creating socket
     connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));//connecting
+
+    //users choosing the different works
+    int n;
+    cout << "Please input a number(1-Send Message to Server; 2-Sent Broadcast Request; 3-Send Files):";
+    cin >> n;
+
     HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receiving message from server
+    /*
+	1.ask to input username and send to server.
+	2.receive a clientnumber from server
+	3.input 1/2/3 represent send message or ask for broad cast or file transfer
+	while(2)
+	while(3)
+	*/
+    /*char bufRecv1[BUF_SIZE] = {0};//creating receiving buffer
+    int byte = 0;
+    cout << "Please Input a username:";//Asking for Inputing the Username
+    gets(bufSend);//Getting Data from Client and Sending to Server
+    send(sock, bufSend, strlen(bufSend), 0);
+    byte = recv(sockClient, bufRecv1, BUF_SIZE , 0);*/
 
-    while(1){
 
+    while(n==1){
         cout << "Input a string(input 'quit' to quit): \n ";
         gets(bufSend);//getting data from client and sending to server
-        if (sendBuf[0] == 'q'&&sendBuf[1] == 'u'&&sendBuf[2] == 'i'&&sendBuf[3] == 't') {  break; }//user input quit to quit the message system
+        if (bufSend[0] == 'q'&&bufSend[1] == 'u'&&bufSend[2] == 'i'&&bufSend[3] == 't') { break; }//user input quit to quit the message system
         send(sock, bufSend, strlen(bufSend), 0);
 
         cout << "accepted client IP:" << inet_ntoa(sockAddr.sin_addr) << '\t';
         cout << "port:" << ntohs(sockAddr.sin_port)  << '\n';
         closesocket(sock);  //closing socket
    }
+   while(n==2){
+        cout << "Input a string(input 'quit' to quit): \n ";
+        gets(bufSend);//getting data from client and sending to server
+        if (bufSend[0] == 'q'&&bufSend[1] == 'u'&&bufSend[2] == 'i'&&bufSend[3] == 't') { break; }//user input quit to quit the message system
+        send(sock, bufSend, strlen(bufSend), 0);
+
+        cout << "accepted client IP:" << inet_ntoa(sockAddr.sin_addr) << '\t';
+        cout << "port:" << ntohs(sockAddr.sin_port)  << '\n';
+        closesocket(sock);  //closing socket
+   }
+   while(n==3){
+        char file_name[FILE_NAME_MAX_SIZE + 1];
+        memset(file_name, 0, sizeof(file_name));
+        printf("Please Input File Name On Server.\t");
+        scanf("%s", file_name);
+
+        char buffer[BUF_SIZE];
+        memset(buffer, 0, sizeof(buffer));
+        strncpy(buffer, file_name, strlen(file_name) > BUF_SIZE ? BUF_SIZE : strlen(file_name));
+        // 向服务器发送buffer中的数据，此时buffer中存放的是客户端需要接收的文件的名字
+        send(sock, buffer, BUF_SIZE, 0);
+
+        FILE *fp = fopen(file_name, "w");
+        if (fp == NULL)
+        {
+            printf("File:\t%s Can Not Open To Write!\n", file_name);
+            exit(1);
+        }
+
+        // 从服务器端接收数据到buffer中
+        memset(buffer, 0, sizeof(buffer));
+        int length = 0;
+        while(length = recv(sock, buffer, BUF_SIZE, 0))
+        {
+            if (length < 0)
+            {
+                //printf("Recieve Data From Server %s Failed!\n", argv[1]);
+                break;
+            }
+
+            int write_length = fwrite(buffer, sizeof(char), length, fp);
+            if (write_length < length)
+            {
+                printf("File:\t%s Write Failed!\n", file_name);
+                break;
+            }
+            memset(buffer, 0, BUF_SIZE);
+        }
+
+       // printf("Recieve File:\t %s From Server[%s] Finished!\n", file_name, argv[1]);
+
+   }
+
    CloseHandle(hThread);//close the receive thread.
    closesocket(sock); //close socket. because hThread uses sock as socket, so if we should close hThread sock first
    WSACleanup();  //stopping using DLL
@@ -92,14 +168,6 @@ int main(){
          }
          fclose(fp);
          */
-
-
-        /*int n;
-    cout << "Please choose which work you want to do:\n";
-    cout << "1--Send Message to Server; 2--Sent Broadcast Request; 3--Send Files\n";
-    cout << "Please input the number: ";
-    cin >> n;
-    cout << endl;*/
 
     //printing the buffer
         //printf("accepted client IP:[%s],port:[%d]\n",inet_ntoa(sockAddr.sin_addr),ntohs(sockAddr.sin_port));
