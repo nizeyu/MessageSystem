@@ -1,7 +1,7 @@
 /*********************************************************************************
-  *Copyright    Zeyu Ni, Xuan Li, Shuo Zhang
+  *Copyright    Xuan Li, Shuo Zhang, Zeyu Ni
   *FileName:  client.cpp
-  *Author:  Zeyu Ni, Xuan Li, Shuo Zhang
+  *Author:  Xuan Li, Shuo Zhang, Zeyu Ni
   *Version:  1.0
   *Date:  2015.12.2
   *Description:  // The server program can:
@@ -53,7 +53,7 @@ DWORD WINAPI Rec(LPVOID ipParameter)
 
 int main(){
     cout << "==========================================================\n";
-    cout << "|This program is wirten by Zeyu Ni, Xuan Li, Shuo Zhang  |\n";
+    cout << "|This program is wirten by Xuan Li, Shuo Zhang, Zeyu Ni  |\n";
     cout << "|This program  using socket lib and tcp/ip portocol      |\n";
     cout << "==========================================================\n";
     //initializing DLL;
@@ -77,12 +77,18 @@ int main(){
     cout << "Please input a number(1-Send Message to Server; 2-Sent Broadcast Request; 3-Send Files):";
     cin >> n;
 
-    char bufRecv1[BUF_SIZE] = {0};//creating receiving buffer
-    char* Namelist = "null";
+    vector<char*> Namelist;
     cout << "Please Input your username:";//Asking for Inputing your Username
     gets(bufSend);//Getting client username from Client and Sending to Server
     send(sock, bufSend, strlen(bufSend), 0);
-    Namelist = (char)recv(sock, bufRecv1, BUF_SIZE , 0);
+    memset(sendBuf, 0, BUF_SIZE);
+    while () {
+		int rec;
+		char bufRecv1[BUF_SIZE] = { 0 };//creating receiving buffer
+		rec = recv(sock, bufRecv1, BUF_SIZE, 0);
+		Namelist.pushback(bufrecv1);
+	}
+
     cout << "The usernames who are online now: \n ";
     for(int i=0;i<strlen(Namelist);i++){
         cout << Namelist[i];
