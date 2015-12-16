@@ -73,10 +73,10 @@ int main(){
     SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);//creating socket
     connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));//connecting
 
-    vector<char*> Namelist;
-    cout << "Please Input your username:";//Asking for Inputing your Username
+    vector<char*> Namelist;    //user list which is login to server
+    cout << "Please Input your username:  ";//Asking for Inputing your Username
     gets(bufSend);//Getting client username from Client and Sending to Server
-    send(sock, bufSend, strlen(bufSend), 0);
+    send(sock, bufSend, strlen(bufSend), 0);//login in
     memset(bufSend, 0, BUF_SIZE);
     /*while () {
 		int rec;
@@ -84,20 +84,39 @@ int main(){
 		rec = recv(sock, bufRecv1, BUF_SIZE, 0);
 		Namelist.pushback(bufrecv1);
 	}*/
+    int n;
+    cout << "Please input a number\n1-Send Message to other user;\n2-Sent Broadcast Request;\n3-Send Files\nPlease input:";
+    cin >> n;
 
-    /*cout << "The usernames who are online now: \n ";
-    for(int i=0;i<strlen(Namelist);i++){
-        cout << Namelist[i];
-    }*/
+
+
+	bool flag = false;
+    while(!flag){
+    cout << "The usernames who are online now: \n ";
+    int i = 0;
+    for(;i<Namelist.size();i++){
+            int j = i+1;
+        cout <<j<<" :  " << Namelist[i] <<endl;
+    }
+    i++;
+    cout <<i<<" :  exit"<<endl;
     cout << "Choose a name you want to chat with: \n ";
     gets(bufSend);//Getting chat friend name from Client and Sending to Server
+    if(bufSend=="exit"){
+        return 0;
+    }
+    int a=atoi(bufSend);
+    if(a>Namelist.size()||a<1){
+        flag = false;
+    }else{
+        flag = true;
+    }
+}
+
     send(sock, bufSend, strlen(bufSend), 0);
-
-
-
     HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receiving message from server
     //users choosing the different works
-    int n;
+
     cout << "Please input a number(1-Send Message to Server; 2-Sent Broadcast Request; 3-Send Files):";
     cin >> n;
     /*
