@@ -16,6 +16,7 @@
 #include <iostream>
 #include <string>                              // for memset
 #include <stdlib.h>                             // for exit
+#include <vector>
 #pragma warning(disable:4996)
 #pragma comment(lib, "ws2_32.lib")  //loading  ws2_32.dll
 
@@ -72,27 +73,22 @@ int main(){
     SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);//creating socket
     connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));//connecting
 
-    //users choosing the different works
-    int n;
-    cout << "Please input a number(1-Send Message to Server; 2-Sent Broadcast Request; 3-Send Files):";
-    cin >> n;
-
     vector<char*> Namelist;
     cout << "Please Input your username:";//Asking for Inputing your Username
     gets(bufSend);//Getting client username from Client and Sending to Server
     send(sock, bufSend, strlen(bufSend), 0);
-    memset(sendBuf, 0, BUF_SIZE);
-    while () {
+    memset(bufSend, 0, BUF_SIZE);
+    /*while () {
 		int rec;
 		char bufRecv1[BUF_SIZE] = { 0 };//creating receiving buffer
 		rec = recv(sock, bufRecv1, BUF_SIZE, 0);
 		Namelist.pushback(bufrecv1);
-	}
+	}*/
 
-    cout << "The usernames who are online now: \n ";
+    /*cout << "The usernames who are online now: \n ";
     for(int i=0;i<strlen(Namelist);i++){
         cout << Namelist[i];
-    }
+    }*/
     cout << "Choose a name you want to chat with: \n ";
     gets(bufSend);//Getting chat friend name from Client and Sending to Server
     send(sock, bufSend, strlen(bufSend), 0);
@@ -100,6 +96,10 @@ int main(){
 
 
     HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receiving message from server
+    //users choosing the different works
+    int n;
+    cout << "Please input a number(1-Send Message to Server; 2-Sent Broadcast Request; 3-Send Files):";
+    cin >> n;
     /*
 	1.ask to input username and send to server.
 	2.receive a clientnumber from server
