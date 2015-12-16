@@ -110,8 +110,14 @@ int main(){
     int n;
     cout << "Please input a number\n1-Send Message to other user;\n2-Sent Broadcast Request;\n3-Send Files\nPlease input:";
     cin >> n;
-
-
+    /*
+	1.ask to input username and send to server.
+	2.receive a clientnumber from server
+	3.input 1/2/3 represent send message or ask for broad cast or file transfer
+	while(2)
+	while(3)
+	*/HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receiving message from server
+    if(n==1){
 
 	bool flag = false;
     while(!flag){
@@ -143,22 +149,9 @@ int main(){
 }
 
     send(sock, bufSend, strlen(bufSend), 0);
-    HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receiving message from server
+
     //users choosing the different works
-
-    cout << "Please input a number(1-Send Message to Server; 2-Sent Broadcast Request; 3-Send Files):";
-    cin >> n;
-    /*
-	1.ask to input username and send to server.
-	2.receive a clientnumber from server
-	3.input 1/2/3 represent send message or ask for broad cast or file transfer
-	while(2)
-	while(3)
-	*/
-
-
-
-    while(n==1){
+    while(1){
         cout << "Input a string(input 'quit' to quit): \n ";
         gets(bufSend);//getting data from client and sending to server
         if (bufSend[0] == 'q'&&bufSend[1] == 'u'&&bufSend[2] == 'i'&&bufSend[3] == 't') { break; }//user input quit to quit the message system
@@ -166,19 +159,22 @@ int main(){
 
         cout << "accepted client IP:" << inet_ntoa(sockAddr.sin_addr) << '\t';
         cout << "port:" << ntohs(sockAddr.sin_port)  << '\n';
-        closesocket(sock);  //closing socket
+     closesocket(sock);  //closing socket
+    }
    }
-   while(n==2){
+   if(n==2){
         cout << "Input a string(input 'quit' to quit): \n ";
         gets(bufSend);//getting data from client and sending to server
-        if (bufSend[0] == 'q'&&bufSend[1] == 'u'&&bufSend[2] == 'i'&&bufSend[3] == 't') { break; }//user input quit to quit the message system
+      //  if (bufSend[0] =="quit") {
+               // break;
+       // }//user input quit to quit the message system
         send(sock, bufSend, strlen(bufSend), 0);
 
         cout << "accepted client IP:" << inet_ntoa(sockAddr.sin_addr) << '\t';
         cout << "port:" << ntohs(sockAddr.sin_port)  << '\n';
         closesocket(sock);  //closing socket
    }
-   while(n==3){
+   if(n==3){
         char file_name[FILE_NAME_MAX_SIZE + 1];
         memset(file_name, 0, sizeof(file_name));
         printf("Please Input File Name On Server.\t");
