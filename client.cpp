@@ -163,21 +163,23 @@ int main(){
   else if(n==2){
     char ipstring = 'N';
         do{
-       bufSend[0] = 9;
-        bufSend[1] = 9;
-       bufSend[2] = 9;
+       bufSend[0] = '9';
+        bufSend[1] = '9';
+       bufSend[2] = '9';
+            //cout << bufSend[0];
           send(sock, bufSend, strlen(bufSend), 0);
             memset(bufSend, 0, BUF_SIZE);
         cout << "Input a string to broadcast(input 'quit' to quit): \n ";
-         gets(bufSend);
-         cout << bufSend;
-        gets(bufSend);//getting data from client and sending to server
+
+         gets(bufSend);    gets(bufSend);
+         cout << bufSend;     cout << "123";
+       // gets(bufSend);//getting data from client and sending to server
 
        if (bufSend=="quit") {
                return 0;
         }//user input quit to quit the message system
         send(sock, bufSend, strlen(bufSend), 0);
-        memset(bufSend, 0, BUF_SIZE);
+    memset(bufSend, 0, BUF_SIZE);
         cout <<"do you want to continue?(Y/N)"<<endl;
         cin >> ipstring;
         }while(ipstring=='Y');
