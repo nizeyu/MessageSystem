@@ -57,7 +57,7 @@ DWORD WINAPI Rec(LPVOID ipParameter)
 		memset(bufRecv, 0, BUF_SIZE);
 		byte = recv(sockClient, bufRecv, BUF_SIZE , 0);//receiving the data from Server
 
-		cout << "Message form server:" << bufRecv << '\n';
+		cout << "Message form other user:" << bufRecv << '\n';
 		if (byte <= 0)
 		{
 			break;
@@ -146,7 +146,7 @@ int main(){
             flag = true;
     }
 }
-
+    cout <<bufSend;
     send(sock, bufSend, strlen(bufSend), 0);
 
     //users choosing the different works
@@ -155,22 +155,32 @@ int main(){
         gets(bufSend);//getting data from client and sending to server
         if (bufSend[0] == 'q'&&bufSend[1] == 'u'&&bufSend[2] == 'i'&&bufSend[3] == 't') { break; }//user input quit to quit the message system
         send(sock, bufSend, strlen(bufSend), 0);
-
         cout << "accepted client IP:" << inet_ntoa(sockAddr.sin_addr) << '\t';
         cout << "port:" << ntohs(sockAddr.sin_port)  << '\n';
-     closesocket(sock);  //closing socket
-    }
+
+    }  //closesocket(sock);  //closing socket
    }
-   if(n==2){
-        cout << "Input a string(input 'quit' to quit): \n ";
+  else if(n==2){
+    char ipstring = 'N';
+        do{
+       bufSend[0] = 9;
+        bufSend[1] = 9;
+       bufSend[2] = 9;
+          send(sock, bufSend, strlen(bufSend), 0);
+            memset(bufSend, 0, BUF_SIZE);
+        cout << "Input a string to broadcast(input 'quit' to quit): \n ";
+         gets(bufSend);
+         cout << bufSend;
         gets(bufSend);//getting data from client and sending to server
-      //  if (bufSend[0] =="quit") {
-               // break;
-       // }//user input quit to quit the message system
-        send(sock, bufSend, strlen(bufSend), 0);
 
-        cout << "accepted client IP:" << inet_ntoa(sockAddr.sin_addr) << '\t';
-        cout << "port:" << ntohs(sockAddr.sin_port)  << '\n';
+       if (bufSend=="quit") {
+               return 0;
+        }//user input quit to quit the message system
+        send(sock, bufSend, strlen(bufSend), 0);
+        memset(bufSend, 0, BUF_SIZE);
+        cout <<"do you want to continue?(Y/N)"<<endl;
+        cin >> ipstring;
+        }while(ipstring=='Y');
         closesocket(sock);  //closing socket
    }
    if(n==3){
