@@ -2,6 +2,7 @@
 #include <WinSock2.h>
 #include <windows.h>
 #include <string>
+#include <vector>
 #pragma warning(disable:4996)
 #pragma comment(lib, "ws2_32.lib")  //load  ws2_32.dl
 #define BUF_SIZE 100
@@ -15,7 +16,7 @@ DWORD WINAPI Rec(LPVOID ipParameter)
 	{
 		WaitForSingleObject(hMutex, INFINITE);
 		memset(revBuf, 0, BUF_SIZE);
-		byte = recv(sockClient, revBuf, BUF_SIZE , 0);//receive the data from Server  
+		byte = recv(sockClient, revBuf, BUF_SIZE , 0);//???????????  
 		printf("Message form server: %s\n", revBuf);
 		if (byte <= 0)
 		{
@@ -25,7 +26,7 @@ DWORD WINAPI Rec(LPVOID ipParameter)
 		ReleaseMutex(hMutex);
 	}
 	printf("thread closed");
-	closesocket(sockClient);//close socket for Client  
+	closesocket(sockClient);//??socket,??????  
 	return 0;
 }
 
@@ -43,14 +44,29 @@ int main() {
 	char sendBuf[BUF_SIZE];
     SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);//create socket
 	connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));//connect to the server
-	HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receive message from server
-	/*
-	1.ask to input username and send to server.
-	2.receive a clientnumber from server
-	3.inpunt 1/2/3 represent send message or ask for broad cast or file transfer
-	while(2)
-	while(3)
-	*/
+														  //users choosing the different works
+    HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receive message from server
+	int n;
+	cout << "Please input a number(1-Send Message to Server; 2-Sent Broadcast Request; 3-Send Files):";
+	cin >> n;
+
+	
+	vector<char*> Namelist  ;
+	cout << "Please Input your username:";//Asking for Inputing your Username
+	gets(sendBuf);//Getting client username from Client and Sending to Server
+	send(sock, sendBuf, strlen(sendBuf), 0);
+	memset(sendBuf, 0, BUF_SIZE);
+	while () {
+		int rec;char bufRecv1[BUF_SIZE] = { 0 };//creating receiving buffer
+		rec = recv(sock, bufRecv1, BUF_SIZE, 0);
+		Namelist.pushback(bufrecv1);
+	}
+	cout << "The usernames who are online now: \n ";
+	for (int i = 0; i<strlen(Namelist); i++) {
+		cout << Namelist[i];
+	}
+	cout << "Choose a name you want to chat with: \n ";
+	
 	while (1) {
 		printf("Input a string: (input 'quit' to quit)\n ");
 		gets_s(sendBuf);
