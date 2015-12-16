@@ -66,7 +66,7 @@ int main(){
     sockaddr_in sockAddr;
     memset(&sockAddr, 0, sizeof(sockAddr));//filling every byte with 0
     sockAddr.sin_family = AF_INET;//Using IPv4 address
-    sockAddr.sin_addr.s_addr = inet_addr("127.0.0.1");// the server's IP address is local host
+    sockAddr.sin_addr.s_addr = inet_addr("155.246.46.30");// the server's IP address is local host
     sockAddr.sin_port = htons(5000);//setting port number
 
     char bufSend[BUF_SIZE] = {0};//creating sending buffer
@@ -74,9 +74,10 @@ int main(){
     SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);//creating socket
     connect(sock, (SOCKADDR*)&sockAddr, sizeof(SOCKADDR));//connecting
 
-    vector<char*> Namelist;    //user list which is login to server
+    //vector<char*> Namelist;    //user list which is login to server
     cout << "Please Input your username:  ";//Asking for Inputing your Username
     gets(bufSend);//Getting client username from Client and Sending to Server
+  //  cout << bufSend;
     send(sock, bufSend, strlen(bufSend), 0);//login in
     memset(bufSend, 0, BUF_SIZE);
     // get the userlist online
@@ -84,9 +85,13 @@ int main(){
 		int rec;
 		char bufRecv1[BUF_SIZE] = { 0 };//creating receiving buffer
 		rec = recv(sock, bufRecv1, BUF_SIZE, 0);
+		cout <<bufRecv1<<endl;
+        //The user list is bufRecve1
+        //now we need split it into different short string
         const char * split = ";";
         char * p;
         p = strtok (bufRecv1,split);
+        cout << p<<endl;
         while(p!=NULL) {
                 Client c;
             const char * split1 = " ";
@@ -96,8 +101,11 @@ int main(){
                 while(p1!=NULL) {
                     if(temp ==0){
                     int a=atoi(p1);
+                  //  cout << a;
                         c.setId(a);
+                      //  temp++;
                     }else{
+                        //    cout << p1;
                         c.setUserName(p1);
                     }
                     p1 = strtok(NULL,split1);
@@ -118,19 +126,19 @@ int main(){
 	while(3)
 	*/HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receiving message from server
     if(n==1){
-
+    cout << clients.size()<<"asdasdasd";
 	bool flag = false;
     while(!flag){
 
     int i = 0;
-    if(Namelist.size()==0){
-      cout << "There is no user online: \n ";
+    if(clients.size()==1){
+      cout << "There is no other user online: \n ";
     }else{
       cout << "The usernames who are online now: \n ";
       }
-    for(;i<Namelist.size();i++){
+    for(;i<clients.size();i++){
             int j = i+1;
-        cout <<j<<" :  " << Namelist[i] <<endl;
+        cout <<j<<" :  " << clients[i].getUsername()<<endl;
     }
     i++;
     cout <<i<<" :  exit"<<endl;
@@ -141,7 +149,7 @@ int main(){
         return 0;
     }
     int a=atoi(bufSend);
-    if(a>Namelist.size()||a<1){
+    if(a>clients.size()||a<1){
         flag = false;
     }else{
         flag = true;
