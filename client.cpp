@@ -25,7 +25,24 @@
 #define FILE_NAME_MAX_SIZE    512
 using namespace std;
 
+int  splitString(const string & strSrc, const std::string& strDelims, vector<string>& strDest)
+{
+typedef std::string::size_type ST;
+string delims = strDelims;
+std::string STR;
+if(delims.empty()) delims = "\n\r";
 
+
+ST pos=0, LEN = strSrc.size();
+while(pos < LEN ){
+STR="";
+while( (delims.find(strSrc[pos]) != std::string::npos) && (pos < LEN) ) ++pos;
+if(pos==LEN) return strDest.size();
+while( (delims.find(strSrc[pos]) == std::string::npos) && (pos < LEN) ) STR += strSrc[pos++];
+if( ! STR.empty() ) strDest.push_back(STR);
+}
+return strDest.size();
+}
 
 HANDLE hMutex;
 DWORD WINAPI Rec(LPVOID ipParameter)
@@ -77,44 +94,15 @@ int main(){
     //vector<char*> Namelist;    //user list which is login to server
     cout << "Please Input your username:  ";//Asking for Inputing your Username
     gets(bufSend);//Getting client username from Client and Sending to Server
-  //  cout << bufSend;
+
     send(sock, bufSend, strlen(bufSend), 0);//login in
     memset(bufSend, 0, BUF_SIZE);
-    // get the userlist online
-    vector< Client > clients;
 		int rec;
 		char bufRecv1[BUF_SIZE] = { 0 };//creating receiving buffer
 		rec = recv(sock, bufRecv1, BUF_SIZE, 0);
-		cout <<bufRecv1<<endl;
-        //The user list is bufRecve1
+          cout << bufRecv1;
         //now we need split it into different short string
-        const char * split = ";";
-        char * p;
-        p = strtok (bufRecv1,split);
-        cout << p<<endl;
-        while(p!=NULL) {
-                Client c;
-            const char * split1 = " ";
-            char * p1;
-            p1 = strtok (p,split1);
-            int temp = 0;
-                while(p1!=NULL) {
-                    if(temp ==0){
-                    int a=atoi(p1);
-                  //  cout << a;
-                        c.setId(a);
-                      //  temp++;
-                    }else{
-                        //    cout << p1;
-                        c.setUserName(p1);
-                    }
-                    p1 = strtok(NULL,split1);
-                    temp++;
-                }
-                clients.push_back(c);
-            p = strtok(NULL,split);
-        }
-//
+
     int n;
     cout << "Please input a number\n1-Send Message to other user;\n2-Sent Broadcast Request;\n3-Send Files\nPlease input:";
     cin >> n;
@@ -126,33 +114,36 @@ int main(){
 	while(3)
 	*/HANDLE WINAPI hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//open a thread for receiving message from server
     if(n==1){
-    cout << clients.size()<<"asdasdasd";
-	bool flag = false;
-    while(!flag){
 
-    int i = 0;
-    if(clients.size()==1){
-      cout << "There is no other user online: \n ";
-    }else{
-      cout << "The usernames who are online now: \n ";
-      }
-    for(;i<clients.size();i++){
-            int j = i+1;
-        cout <<j<<" :  " << clients[i].getUsername()<<endl;
-    }
-    i++;
-    cout <<i<<" :  exit"<<endl;
-    cout << "Choose a name you want to chat with: \n ";
-    //gets(bufSend);//Getting chat friend name from Client and Sending to Server
-    cin >> bufSend;
-    if(bufSend=="exit"){
-        return 0;
-    }
-    int a=atoi(bufSend);
-    if(a>clients.size()||a<1){
-        flag = false;
-    }else{
-        flag = true;
+      cout << "The usernames who are online now: \n";
+
+
+        const char * split = "; ";
+        vector<string> splitStrs;
+        splitString(bufRecv1,split, splitStrs);
+        vector<string>::iterator iter;
+        int temp1 = 0;
+        for (iter = splitStrs.begin(); iter != splitStrs.end(); ++iter) {
+                   if(temp1 %2==0){
+                         cout  <<*iter <<":";
+                    }else{
+                        cout  <<*iter << endl;
+                    }
+                    temp1++;
+            }
+            bool flag = false;
+            while(!flag){
+            cout << "Choose a name you want to chat with: (if you want to exit please input 'exit')\n ";
+            //gets(bufSend);//Getting chat friend name from Client and Sending to Server
+            cin >> bufSend;
+            if(bufSend=="exit"){
+                return 0;
+            }
+            int a=atoi(bufSend);
+            if(a>temp1||a<0){
+            flag = false;
+                }else{
+            flag = true;
     }
 }
 
