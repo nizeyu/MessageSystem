@@ -17,6 +17,7 @@
 #include <string>                              // for memset
 #include <stdlib.h>                             // for exit
 #include <vector>
+#include"Client.h"
 #pragma warning(disable:4996)
 #pragma comment(lib, "ws2_32.lib")  //loading  ws2_32.dll
 
@@ -78,12 +79,34 @@ int main(){
     gets(bufSend);//Getting client username from Client and Sending to Server
     send(sock, bufSend, strlen(bufSend), 0);//login in
     memset(bufSend, 0, BUF_SIZE);
-    /*while () {
+    // get the userlist online
+    vector< Client > clients;
 		int rec;
 		char bufRecv1[BUF_SIZE] = { 0 };//creating receiving buffer
 		rec = recv(sock, bufRecv1, BUF_SIZE, 0);
-		Namelist.pushback(bufrecv1);
-	}*/
+        const char * split = ";";
+        char * p;
+        p = strtok (bufRecv1,split);
+        while(p!=NULL) {
+                Client c;
+            const char * split1 = " ";
+            char * p1;
+            p1 = strtok (p,split1);
+            int temp = 0;
+                while(p1!=NULL) {
+                    if(temp ==0){
+                    int a=atoi(p1);
+                        c.setId(a);
+                    }else{
+                        c.setUserName(p1);
+                    }
+                    p1 = strtok(NULL,split1);
+                    temp++;
+                }
+                clients.push_back(c);
+            p = strtok(NULL,split);
+        }
+//
     int n;
     cout << "Please input a number\n1-Send Message to other user;\n2-Sent Broadcast Request;\n3-Send Files\nPlease input:";
     cin >> n;
@@ -92,8 +115,13 @@ int main(){
 
 	bool flag = false;
     while(!flag){
-    cout << "The usernames who are online now: \n ";
+
     int i = 0;
+    if(Namelist.size()==0){
+      cout << "There is no user online: \n ";
+    }else{
+      cout << "The usernames who are online now: \n ";
+      }
     for(;i<Namelist.size();i++){
             int j = i+1;
         cout <<j<<" :  " << Namelist[i] <<endl;
@@ -101,7 +129,8 @@ int main(){
     i++;
     cout <<i<<" :  exit"<<endl;
     cout << "Choose a name you want to chat with: \n ";
-    gets(bufSend);//Getting chat friend name from Client and Sending to Server
+    //gets(bufSend);//Getting chat friend name from Client and Sending to Server
+    cin >> bufSend;
     if(bufSend=="exit"){
         return 0;
     }
