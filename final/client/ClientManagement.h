@@ -15,10 +15,14 @@
 
 /**
  * @Class：ClientManagement
- * @description: In this Class, all data object and method object are definited in the Message System. The data object include: IP, port, socket, Client, buffer, thread. The method object in this class can complete the initialization, connection between client and server, users log in, sending message, receiving message, broadcast, closing program, etc. These methods can be realized in "client.cpp".
+ * @description: All data object and method object are definited in this Class.
+                 The data object include: IP, port, socket, Client, buffer, thread. 
+                 The method object in this class can complete the initialization, connection between client and server, 
+                 users log in, sending message, receiving message, broadcast, closing program, etc. 
+                 These methods can be realized in "client.cpp".
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0,
- * @date: 12/3/2015
+ * @date: 12/16/2015
  */
 class ClientManagement
 {
