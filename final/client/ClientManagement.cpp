@@ -12,7 +12,7 @@ ClientManagement::  ClientManagement(int pt,  char* ipAddres){
 
 }
 
-void ClientManagement::  initialization(){
+void ClientManagement::  initialization(){//initializing DLL;
     WSADATA wsaData;
     WSAStartup(MAKEWORD(2, 2), &wsaData);
     memset(&sockAddr, 0, sizeof(sockAddr));//filling every byte with 0
