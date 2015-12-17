@@ -248,3 +248,4 @@ int main(){
     }else if(n==2){
         cm.boradcast();
     }
+}
