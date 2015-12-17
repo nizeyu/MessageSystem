@@ -22,7 +22,7 @@
                  These methods can be realized in "client.cpp".
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0,
- * @date: 12/16/2015
+ * @date: 12/3/2015
  */
 class ClientManagement
 {
