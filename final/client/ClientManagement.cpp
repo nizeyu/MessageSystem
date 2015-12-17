@@ -29,7 +29,7 @@ ClientManagement::ClientManagement(int pt,  char* ipAddres){
  * @description: initial DLL, set IPv4, IP address of server, port numner and sending buffer.
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
- * @date: 12/16/2015
+ * @date: 12/2/2015
  */
 void ClientManagement::initialization(){
     WSADATA wsaData;//initializing DLL;
@@ -46,7 +46,7 @@ void ClientManagement::initialization(){
  * @description: connect the client to server. setting PF_INET indicate IPv4, SOCK_STREAM indicate connection orientated translation method, IPPROTO_TCP indicate TCP protocol.
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
- * @date: 12/16/2015
+ * @date: 12/2/2015
  */
 void ClientManagement::  connection(){
     sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);//creating socket
@@ -62,7 +62,7 @@ void ClientManagement::  connection(){
  * @description: Open a thread to receive message from server. It can provide sending and receiveing message in the same time. And also avoid miss the information from server.
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
- * @date: 12/16/2015
+ * @date: 12/3/2015
  */
 HANDLE hMutex;
 DWORD WINAPI Rec(LPVOID ipParameter)//thread for receiving message
@@ -95,7 +95,7 @@ DWORD WINAPI Rec(LPVOID ipParameter)//thread for receiving message
  * @description: call the tread function to receive message from server.
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
- * @date: 12/16/2015
+ * @date: 12/3/2015
  */
 void ClientManagement::  receiveMessage(){
     hThread = CreateThread(NULL, 0, Rec, (LPVOID)sock, 0, NULL);//call the tread
@@ -106,7 +106,7 @@ void ClientManagement::  receiveMessage(){
  * @description: sending broadcast message to server after user type special numbers.
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
- * @date: 12/16/2015
+ * @date: 12/6/2015
  */
 void ClientManagement::boradcast(){
     char ipstring = 'N';
@@ -141,7 +141,7 @@ void ClientManagement::boradcast(){
                  step4: enter "quit" for stopping chat
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
- * @date: 12/16/2015
+ * @date: 12/3/2015
  */
 void ClientManagement::sendMessage(char* bufRecv1){
     cout << "The usernames who are online now: \n";
@@ -196,7 +196,7 @@ void ClientManagement::sendMessage(char* bufRecv1){
  * @description: user log in the server by senting username to server. At the same time, open the tread for receiving information from server.
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
- * @date: 12/16/2015
+ * @date: 12/2/2015
  */
 char* ClientManagement::login(char* username){
     cout << username;
@@ -214,7 +214,7 @@ char* ClientManagement::login(char* username){
  * @description: Close the thread, socket, and DLL
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
- * @date: 12/16/2015
+ * @date: 12/3/2015
  */
 ClientManagement::~ClientManagement()
 {
