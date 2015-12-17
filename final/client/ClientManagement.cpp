@@ -1,5 +1,15 @@
-#include "ClientManagement.h"
-#include "tools.h"
+/*********************************************************************************
+ *Copyright    Xuan Li, Zeyu Ni, Shuo Zhang
+ *FileName:  client.cpp
+ *Author:  Xuan Li, Zeyu Ni, Shuo Zhang
+ *Version:  1.0
+ *Date:  2015.12.2
+ *Description:  The client program can:
+                1. sent message to server
+                2. sent broadcasting request with messasge to server
+                3. sent file to sevrver and request for resenting to another client
+ *Others:  none
+ **********************************************************************************/
 
 #include "ClientManagement.h"
 #include "tools.h"
@@ -117,7 +127,7 @@ void ClientManagement::boradcast(){
         }//user input quit to quit the message system
         send(sock, bufSend, strlen(bufSend), 0);
         memset(bufSend, 0, BUF_SIZE);
-        cout <<"do you want to continue?(Y/N)"<<endl;
+        cout <<"do you want to continue?(Y/N)"<<endl;//choose Y to continue sending message
         cin >> ipstring;
     }while(ipstring=='Y');
     closesocket(sock);  //closing socket
@@ -161,8 +171,8 @@ void ClientManagement::sendMessage(char* bufRecv1){
         if(bufSend=="exit"){
             return ;
         }
-        int a=atoi(bufSend);
-        if(a>temp1||a<0){
+        int a=atoi(bufSend);//force change from char to int
+        if(a>temp1||a<0){//if the username are not in the region of total length, false;
             flag = false;
         }else{
             flag = true;
@@ -183,7 +193,7 @@ void ClientManagement::sendMessage(char* bufRecv1){
 
 /**
  * @Method：login
- * @description: user login in the server by senting username to server. At the same time, open the tread for receiving information from server.
+ * @description: user log in the server by senting username to server. At the same time, open the tread for receiving information from server.
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0
  * @date: 12/16/2015
@@ -238,5 +248,3 @@ int main(){
     }else if(n==2){
         cm.boradcast();
     }
-    
-}
