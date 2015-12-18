@@ -42,7 +42,8 @@ public:
     void close();//definition close method
     void sendMessage(char* userlist);
     void boradcast();//definition boradcast method
-    int transferFile(char* userlist);//definition boradcast method
+    int transferFile(char* userlist);
+
     void receiveMessage();//definition receiveMessage method
     virtual ~ClientManagement();//definition ~ClientManagement method for stopping chat
 
