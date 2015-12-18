@@ -129,7 +129,7 @@ public:
         send(sSend, RecvBuffer, strlen(RecvBuffer), 0);//send "!-@" to client indicate allowing file transfer
         memset(RecvBuffer, 0x00, BUF_SIZE);//clear 0 for receiving buffer
         int length = 0;
-        send(sSend, file_name, strlen(file_name), 0);//send 
+        send(sSend, file_name, strlen(file_name), 0);//send
            while(length = recv(sAccept, RecvBuffer, BUF_SIZE, 0))
             {
             if (length < 0)
@@ -245,7 +245,7 @@ public:
 			//to show all clients in the system for user to choose to whom to send
 			const char * idname = new char[BUF_SIZE];
 			idname = allname.c_str();
-			send(sAccept, idname, BUF_SIZE, 0)//send the name&ID list to client
+			send(sAccept, idname, BUF_SIZE, 0);//send the name&ID list to client
 			unsigned client_port = 0;
 			client_port = ntohs(sockAddr.sin_port);//get client ip and port
 			printf("accepted client IP:[%s],port:[%d]\n", inet_ntoa(clntAddr.sin_addr), ntohs(sockAddr.sin_port));
