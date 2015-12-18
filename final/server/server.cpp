@@ -62,7 +62,8 @@ public:
 	}
 
 
-	static void transfer(SOCKET sAccept,int destnation){
+	static void transfer(SOCKET sAccept,SOCKET sSend){
+
         int RET = 0;
 		char RecvBuffer[BUF_SIZE];
 		char file_name[BUF_SIZE];
@@ -71,32 +72,27 @@ public:
         RET = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
         strncpy(file_name, RecvBuffer, BUF_SIZE );
         memset(RecvBuffer, 0x00, BUF_SIZE);
-        FILE *fp = fopen(file_name, "w");
-         if (fp == NULL)
-        {
-        printf("File:\t%s Can Not Open To Write!\n",Sleep(2000); file_name);
-        exit(1);
-        }
-           int length = 0;
+        cout << "xxxxxxxxxxxxx";
+
+        RecvBuffer[0] = '!';
+        RecvBuffer[1] = '-';
+        RecvBuffer[2] = '@';
+        send(sSend, RecvBuffer, strlen(RecvBuffer), 0);
+        memset(RecvBuffer, 0x00, BUF_SIZE);
+        int length = 0;
+        send(sSend, file_name, strlen(file_name), 0);
            while(length = recv(sAccept, RecvBuffer, BUF_SIZE, 0))
             {
             if (length < 0)
             {
-                printf("Recieve Data From Server %s Failed!\n");
+                printf("Recieve Data From Server failed!\n");
                 break;
             }
-
-                int write_length = fwrite(RecvBuffer, sizeof(char), length, fp);
-                if (write_length < length)
-                {
-                printf("File:\t%s Write Failed!\n", file_name);
-                break;
-                }
+            send(sSend, RecvBuffer, strlen(RecvBuffer), 0);  //send data to client
                  memset(RecvBuffer, 0x00, BUF_SIZE);
         }
-
+        send(sSend, RecvBuffer, strlen(RecvBuffer), 0);  //send data to client
         printf("Recieve File:\t %s Finished!\n", file_name);
-    fclose(fp);
 	}
 
 	static DWORD WINAPI ClientThread(LPVOID ssAccept)
@@ -106,39 +102,33 @@ public:
 		//cout<<sAccept<<endl;
 		int RET = 0;
 		char RecvBuffer[BUF_SIZE];
+		while(1){
 		RET = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
 		int destnation = atoi(RecvBuffer);
-		cout << destnation;
 		if (destnation == 999) {
 			Server::broadcast(sAccept);
-			return 0;
+			//return 0;
 		}
 		else if (destnation == 998) {
+            memset(RecvBuffer, 0x00, BUF_SIZE);
             RET = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
-            int destnation = atoi(RecvBuffer);
-            Server::transfer(sAccept, destnation);
-			return 0;
+            int sss = atoi(RecvBuffer);
+            cout << sss;
+            SOCKET sSend = clients[sss].getClientSOCKET();
+            Server::transfer(sAccept, sSend);
+			//return 0;
 
         }
 		else {
 			Server::p2p(sAccept, destnation);
-			return 0;
+			//return 0;
+		}
 		}
 	}
 
 	void opennew() {
 	     hThread = CreateThread(NULL, 0, Server::ClientThread, (LPVOID)sAccept, 0, NULL);
-
 		Sleep(1000);
-
-		//  int strLen = recv(sAccept, buffer, BUF_SIZE, 0);  //
-		//  printf("Message form client: %s\n", buffer);
-		//  printf("Input a string: ");
-		// gets(buffer);
-		//send(sAccept, buffer, strlen(buffer), 0);  //send data to client
-
-
-		//close socket
 	}
 	void login()
 	{
