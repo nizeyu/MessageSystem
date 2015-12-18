@@ -1,3 +1,13 @@
+/*********************************************************************************
+ *Copyright    Xuan Li, Zeyu Ni, Shuo Zhang
+ *FileName:  ClientManagement.h
+ *Author:  Xuan Li, Zeyu Ni, Shuo Zhang
+ *Version:  1.0
+ *Date:  2015.12.3
+ *Description:  The ClientManagement class for establised the data and method object.
+ *Others:  none
+ **********************************************************************************/
+
 #ifndef CLIENTMANAGEMENT_H
 #define CLIENTMANAGEMENT_H
 
