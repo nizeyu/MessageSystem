@@ -38,7 +38,7 @@ void ClientManagement::initialization(){
     sockAddr.sin_family = AF_INET;//Using IPv4 address
     sockAddr.sin_addr.s_addr = inet_addr(ipAddress);// the server's IP address is local host
     sockAddr.sin_port = htons(port);//setting port number
-    bufSend[BUF_SIZE];//Creating sending buffer
+    bufSend[BUF_SIZE]= {0};//Creating sending buffer
 }
 
 /**
