@@ -17,12 +17,12 @@ vector< Client > clients;
 class Server
 {
 private:
-	
+
 public:
 	SOCKET servSock;
 	SOCKET sAccept;
 	sockaddr_in sockAddr;
-	
+
 	sockaddr_in clntAddr;
 	HANDLE WINAPI  hThread;
 	int nSize = sizeof(clntAddr);
@@ -60,9 +60,48 @@ public:
 		}
 		// closesocket(sAccept);
 	}
+
+
+	static void transfer(SOCKET sAccept,int destnation){
+        int RET = 0;
+		char RecvBuffer[BUF_SIZE];
+		char file_name[BUF_SIZE];sss
+        memset(RecvBuffer, 0x00, BUF_SIZE);
+         memset(file_name, 0x00, BUF_SIZE);
+        RET = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
+        strncpy(file_name, RecvBuffer, BUF_SIZE );
+        memset(RecvBuffer, 0x00, BUF_SIZE);
+        FILE *fp = fopen(file_name, "w");
+         if (fp == NULL)
+        {
+        printf("File:\t%s Can Not Open To Write!\n", file_name);
+        exit(1);
+        }
+           int length = 0;
+           while(length = recv(sAccept, RecvBuffer, BUF_SIZE, 0))
+            {
+            if (length < 0)
+            {
+                printf("Recieve Data From Server %s Failed!\n");
+                break;
+            }
+
+                int write_length = fwrite(RecvBuffer, sizeof(char), length, fp);
+                if (write_length < length)
+                {
+                printf("File:\t%s Write Failed!\n", file_name);
+                break;
+                }
+                 memset(RecvBuffer, 0x00, BUF_SIZE);
+        }
+
+        printf("Recieve File:\t %s Finished!\n", file_name);
+    fclose(fp);
+	}
+
 	static DWORD WINAPI ClientThread(LPVOID ssAccept)
 	{
-		
+
 		SOCKET sAccept = (SOCKET)ssAccept;
 		//cout<<sAccept<<endl;
 		int RET = 0;
@@ -74,17 +113,24 @@ public:
 			Server::broadcast(sAccept);
 			return 0;
 		}
+		else if (destnation == 998) {
+            RET = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
+            int destnation = atoi(RecvBuffer);
+            Server::transfer(sAccept, destnation);
+			return 0;
+
+        }
 		else {
 			Server::p2p(sAccept, destnation);
 			return 0;
 		}
 	}
-	
+
 	void opennew() {
 	     hThread = CreateThread(NULL, 0, Server::ClientThread, (LPVOID)sAccept, 0, NULL);
-		
+
 		Sleep(1000);
-		
+
 		//  int strLen = recv(sAccept, buffer, BUF_SIZE, 0);  //
 		//  printf("Message form client: %s\n", buffer);
 		//  printf("Input a string: ");
@@ -131,7 +177,7 @@ public:
 			client_port = ntohs(sockAddr.sin_port);
 			//cout<<"client "<<client_ip<<":"<<client_port<<endl;   // some wrong in this code
 			printf("accepted client IP:[%s],port:[%d]\n", inet_ntoa(clntAddr.sin_addr), ntohs(sockAddr.sin_port));
-		
+
 	}
 
 };
@@ -161,7 +207,7 @@ int Server::init()
 		return 0;
 	}
 	//bind socket
-	
+
 	memset(&sockAddr, 0, sizeof(sockAddr));
 	sockAddr.sin_family = AF_INET;  //using ipv4 adress
 	sockAddr.sin_addr.s_addr = INADDR_ANY;// local
@@ -190,7 +236,6 @@ int Server::init()
 		if (test == 0) return 0;
 		while (1) {
 			server.login();
-			cout << "123123";
 			server.opennew();
 			if (server.hThread == NULL)
 			{
@@ -198,10 +243,7 @@ int Server::init()
 				 break;
 			}
 		}
-CloseHandle(server.hThread);
-		
-
-	
+    CloseHandle(server.hThread);
 	//close socket
 	closesocket(server.sAccept);
 	closesocket(server.servSock);
