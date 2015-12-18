@@ -65,7 +65,7 @@ public:
 	static void transfer(SOCKET sAccept,int destnation){
         int RET = 0;
 		char RecvBuffer[BUF_SIZE];
-		char file_name[BUF_SIZE];sss
+		char file_name[BUF_SIZE];
         memset(RecvBuffer, 0x00, BUF_SIZE);
          memset(file_name, 0x00, BUF_SIZE);
         RET = recv(sAccept, RecvBuffer, BUF_SIZE, 0);
@@ -74,7 +74,7 @@ public:
         FILE *fp = fopen(file_name, "w");
          if (fp == NULL)
         {
-        printf("File:\t%s Can Not Open To Write!\n", file_name);
+        printf("File:\t%s Can Not Open To Write!\n",Sleep(2000); file_name);
         exit(1);
         }
            int length = 0;
