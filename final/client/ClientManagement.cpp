@@ -19,6 +19,7 @@
 
 using namespace std;
 
+//constructor
 ClientManagement::ClientManagement(int pt,  char* ipAddres){
     ipAddress = ipAddres;
     port = pt;
@@ -38,7 +39,7 @@ void ClientManagement::initialization(){
     sockAddr.sin_family = AF_INET;//Using IPv4 address
     sockAddr.sin_addr.s_addr = inet_addr(ipAddress);// the server's IP address is local host
     sockAddr.sin_port = htons(port);//setting port number
-    bufSend[BUF_SIZE]= {0};//Creating sending buffer
+    bufSend[BUF_SIZE];//Creating sending buffer
 }
 
 /**
@@ -187,6 +188,15 @@ void ClientManagement::boradcast(){
 }
 
 
+/**
+ * @Method：transferFile
+ * @description: step1: split the name and ID lists from server and output to users
+                 step2: users choose the friend name who the want transfer file
+                 step3: choose file and sent to friend
+ * @author: Xuan Li, Zeyu Ni, Shuo Zhang
+ * @version: 1.0
+ * @date: 12/12/2015
+ */
 
  int ClientManagement::transferFile(char* bufRecv1){
         bufSend[0] = '9';
