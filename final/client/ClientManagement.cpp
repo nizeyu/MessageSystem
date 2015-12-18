@@ -57,6 +57,50 @@ void ClientManagement::  connection(){
     }
 }
 
+
+
+  int receiveFile(SOCKET sockClient){
+        int byte = 0;
+        char file_name[BUF_SIZE];
+        char RecvBuffer[BUF_SIZE];//creating receiving buffer
+        memset(RecvBuffer, 0x00, BUF_SIZE);
+        memset(file_name, 0x00, BUF_SIZE);
+        byte = recv(sockClient, RecvBuffer, BUF_SIZE , 0);//receiving the data from Server
+        strncpy(file_name, RecvBuffer, BUF_SIZE );
+        memset(RecvBuffer, 0x00, BUF_SIZE);
+
+        FILE *fp = fopen(file_name, "w");
+         if (fp == NULL)
+        {
+        printf("File:\t%s Can Not Open To Write!\n", file_name);
+        cout << file_name;
+        exit(1);
+        }
+        int length = 0;
+        while(length = recv(sockClient, RecvBuffer, BUF_SIZE, 0))
+            {
+                if (length < 0)
+                {
+                    printf("Recieve Data From Server %s Failed!\n");
+                    break;
+                }
+                cout <<length;
+                int write_length = fwrite(RecvBuffer, sizeof(char), length, fp);
+                if (write_length < length)
+                {
+                printf("File:\t%s Write Failed!\n", file_name);
+                break;
+                }
+                 memset(RecvBuffer, 0x00, BUF_SIZE);
+        }
+
+        printf("Recieve File:\t %s Finished!\n", file_name);
+          cout << "xxxxxxxxxxxxx";
+    fclose(fp);
+
+  }
+
+
 /**
  * @fun：Rec
  * @description: Open a thread to receive message from server. It can provide sending and receiveing message in the same time. And also avoid miss the information from server.
@@ -78,6 +122,11 @@ DWORD WINAPI Rec(LPVOID ipParameter)//thread for receiving message
         byte = recv(sockClient, bufRecv, BUF_SIZE , 0);//receiving the data from Server
 
         cout << "Message form other user:" << bufRecv << '\n';
+        if( bufRecv[0] == '!'&&bufRecv[1] == '-'&&bufRecv[2] == '@'){
+                int flag = receiveFile(sockClient);
+        }
+
+
         if (byte <= 0)
         {
             break;
@@ -133,6 +182,8 @@ void ClientManagement::boradcast(){
     closesocket(sock);  //closing socket
 }
 
+
+
  int ClientManagement::transferFile(char* bufRecv1){
         bufSend[0] = '9';
         bufSend[1] = '9';
@@ -162,8 +213,9 @@ void ClientManagement::boradcast(){
     bool flag = false;
     while(!flag){
         cout << "Choose a id you want to TransferFile to : (if you want to exit please input 'exit')\n ";
-        //gets(bufSend);//Getting chat friend name from Client and Sending to Server
-        cin >> bufSend;
+     //   gets(bufSend);//Getting chat friend name from Client and Sending to Server
+        //gets(bufSend);//
+      cin >> bufSend;
         if(bufSend=="exit"){
             return -1;
         }
@@ -212,6 +264,11 @@ void ClientManagement::boradcast(){
 
 }
 
+
+
+
+
+
 /**
  * @Method：sendMessage
  * @description: step1: split the name and ID lists from server and output to users
@@ -259,7 +316,7 @@ void ClientManagement::sendMessage(char* bufRecv1){
             flag = true;
         }
     }
-    cout <<bufSend;
+  //  cout <<bufSend;
     send(sock, bufSend, strlen(bufSend), 0);//send the name to server
 
     while(1){
