@@ -69,14 +69,14 @@ DWORD WINAPI Rec(LPVOID ipParameter)//thread for receiving message
 {
     SOCKET sockClient = (SOCKET)ipParameter;
     char bufRecv[BUF_SIZE] = {0};//creating receiving buffer
-    
+
     int byte = 0;
     while (1)
     {
         WaitForSingleObject(hMutex, INFINITE);
         memset(bufRecv, 0, BUF_SIZE);
         byte = recv(sockClient, bufRecv, BUF_SIZE , 0);//receiving the data from Server
-        
+
         cout << "Message form other user:" << bufRecv << '\n';
         if (byte <= 0)
         {
@@ -121,7 +121,7 @@ void ClientManagement::boradcast(){
         gets(bufSend);    gets(bufSend);
         cout << bufSend;     cout << "123";//input the broadcast information
         // gets(bufSend);//getting data from client and sending to server
-        
+
         if (bufSend=="quit") {
             return ;
         }//user input quit to quit the message system
@@ -131,6 +131,85 @@ void ClientManagement::boradcast(){
         cin >> ipstring;
     }while(ipstring=='Y');
     closesocket(sock);  //closing socket
+}
+
+ int ClientManagement::transferFile(char* bufRecv1){
+        bufSend[0] = '9';
+        bufSend[1] = '9';
+        bufSend[2] = '8';
+        //if user input "998",indicate the request for transferFile
+        send(sock, bufSend, strlen(bufSend), 0);
+        memset(bufSend, 0, BUF_SIZE);
+    cout << "The usernames who are online now: \n";
+    const char * split = "; ";//using "; " as split mark
+    vector<string> splitStrs;
+    tool t;
+    t.splitString(bufRecv1,split, splitStrs);//call the function to split users' information
+    vector<string>::iterator iter;
+    int temp1 = 0;//output the userslist name and id online
+    for (iter = splitStrs.begin(); iter != splitStrs.end(); ++iter) {
+        if(temp1 %2==0){
+            cout  <<*iter <<":";
+        }else{
+            cout  <<*iter << endl;
+        }
+        temp1++;//the total lenth of all users' information
+        //origanl string such as 1 aa;2 3333;
+        //the ouput string should be:
+        //1:aa
+        //2:333
+    }
+    bool flag = false;
+    while(!flag){
+        cout << "Choose a id you want to TransferFile to : (if you want to exit please input 'exit')\n ";
+        //gets(bufSend);//Getting chat friend name from Client and Sending to Server
+        cin >> bufSend;
+        if(bufSend=="exit"){
+            return -1;
+        }
+        int a=atoi(bufSend);//force change from char to int
+        if(a>temp1||a<0){//if the username are not in the region of total length, false;
+            flag = false;
+        }else{
+            flag = true;
+        }
+    }
+    //cout <<bufSend;
+    send(sock, bufSend, strlen(bufSend), 0);//send the name to server
+    memset(bufSend, 0, BUF_SIZE);
+    cout << "please input filename you want to transfer\n ";
+    cin >> bufSend;
+     FILE *fp = fopen(bufSend, "r");
+     if (fp == NULL)
+        {
+            printf("File:\t%s Not Found!\n", bufSend);
+            Sleep(2000);
+             return -1;
+        }
+        else{
+
+        cout << "file open success";
+        send(sock, bufSend, strlen(bufSend), 0);//send the name to server
+         memset(bufSend, 0, BUF_SIZE);
+          int file_block_length = 0;
+           while( (file_block_length = fread(bufSend, sizeof(char), BUF_SIZE, fp)) > 0)
+            {
+           printf("file_block_length = %d\n", file_block_length);
+                if (send(sock, bufSend, file_block_length, 0) < 0)
+                {
+                 printf("Send File:\t Failed!\n");
+                 Sleep(2000);
+                    return -1;
+                                    }
+
+              memset(bufSend, 0, BUF_SIZE);
+            }
+            fclose(fp);
+            printf("File Transfer Finished!\n");
+            Sleep(2000);
+            return 1;
+        }
+
 }
 
 /**
@@ -143,6 +222,8 @@ void ClientManagement::boradcast(){
  * @version: 1.0
  * @date: 12/3/2015
  */
+
+
 void ClientManagement::sendMessage(char* bufRecv1){
     cout << "The usernames who are online now: \n";
     const char * split = "; ";//using "; " as split mark
@@ -165,7 +246,7 @@ void ClientManagement::sendMessage(char* bufRecv1){
     }
     bool flag = false;
     while(!flag){
-        cout << "Choose a name you want to chat with: (if you want to exit please input 'exit')\n ";
+        cout << "Choose a id you want to chat with: (if you want to exit please input 'exit')\n ";
         //gets(bufSend);//Getting chat friend name from Client and Sending to Server
         cin >> bufSend;
         if(bufSend=="exit"){
@@ -180,7 +261,7 @@ void ClientManagement::sendMessage(char* bufRecv1){
     }
     cout <<bufSend;
     send(sock, bufSend, strlen(bufSend), 0);//send the name to server
-    
+
     while(1){
         cout << "Input a string(input 'quit' to quit): \n ";
         gets(bufSend);//getting data from client and sending to server
@@ -239,13 +320,20 @@ int main(){
     cout << "Please Input your username:  ";//Asking for Inputing your Username
     gets(buff);//Getting client username from Client and Sending to Server
     char* userlist =  cm.login(buff);
-    
+
     int n;//user choosing different works
+    do{
     cout << "Please input a number\n1-Send Message to other user;\n2-Sent Broadcast Request;\n3-Send Files\nPlease input:";
     cin >> n;
     if(n==1){
         cm.sendMessage(userlist);
     }else if(n==2){
         cm.boradcast();
+    }else{
+       int temp = cm.transferFile(userlist);
+       if(temp==1){
+        cout<<"file transfer finished"<<endl;
+       }
     }
+    }while(1);
 }
