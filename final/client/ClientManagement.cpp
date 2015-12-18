@@ -38,7 +38,7 @@ void ClientManagement::initialization(){
     sockAddr.sin_family = AF_INET;//Using IPv4 address
     sockAddr.sin_addr.s_addr = inet_addr(ipAddress);// the server's IP address is local host
     sockAddr.sin_port = htons(port);//setting port number
-    bufSend[BUF_SIZE] = {0};//Creating sending buffer
+    bufSend[BUF_SIZE];//Creating sending buffer
 }
 
 /**
@@ -57,26 +57,31 @@ void ClientManagement::  connection(){
     }
 }
 
-
-
+/**
+ * @Method：receiveFile
+ * @description: receiving file from server
+ * @author: Xuan Li, Zeyu Ni, Shuo Zhang
+ * @version: 1.0
+ * @date: 12/12/2015
+ */
   int receiveFile(SOCKET sockClient){
         int byte = 0;
         char file_name[BUF_SIZE];
         char RecvBuffer[BUF_SIZE];//creating receiving buffer
-        memset(RecvBuffer, 0x00, BUF_SIZE);
-        memset(file_name, 0x00, BUF_SIZE);
+        memset(RecvBuffer, 0x00, BUF_SIZE);//clear 0 for receiving buffer
+        memset(file_name, 0x00, BUF_SIZE);//clear 0 for file name
         byte = recv(sockClient, RecvBuffer, BUF_SIZE , 0);//receiving the data from Server
-        strncpy(file_name, RecvBuffer, BUF_SIZE );
-        memset(RecvBuffer, 0x00, BUF_SIZE);
+        strncpy(file_name, RecvBuffer, BUF_SIZE );//copy filename from receiving buffer
+        memset(RecvBuffer, 0x00, BUF_SIZE);//clear 0 for receiving buffer
 
         FILE *fp = fopen(file_name, "w");
-         if (fp == NULL)
+         if (fp == NULL)//check the file
         {
-        printf("File:\t%s Can Not Open To Write!\n", file_name);
-        cout << file_name;
-        exit(1);
+           printf("File:\t%s Can Not Open To Write!\n", file_name);
+           cout << file_name;
+           exit(1);
         }
-        int length = 0;
+        int length = 0;//receiving file
         while(length = recv(sockClient, RecvBuffer, BUF_SIZE, 0))
             {
                 if (length < 0)
@@ -85,19 +90,18 @@ void ClientManagement::  connection(){
                     break;
                 }
                 cout <<length;
-                int write_length = fwrite(RecvBuffer, sizeof(char), length, fp);
+                int write_length = fwrite(RecvBuffer, sizeof(char), length, fp);//Receiving file
                 if (write_length < length)
                 {
-                printf("File:\t%s Write Failed!\n", file_name);
-                break;
+                    printf("File:\t%s Write Failed!\n", file_name);
+                    break;
                 }
-                 memset(RecvBuffer, 0x00, BUF_SIZE);
+                memset(RecvBuffer, 0x00, BUF_SIZE);
         }
 
         printf("Recieve File:\t %s Finished!\n", file_name);
           cout << "xxxxxxxxxxxxx";
-    fclose(fp);
-
+        fclose(fp);//close file
   }
 
 
@@ -261,13 +265,7 @@ void ClientManagement::boradcast(){
             Sleep(2000);
             return 1;
         }
-
 }
-
-
-
-
-
 
 /**
  * @Method：sendMessage
@@ -279,7 +277,6 @@ void ClientManagement::boradcast(){
  * @version: 1.0
  * @date: 12/3/2015
  */
-
 
 void ClientManagement::sendMessage(char* bufRecv1){
     cout << "The usernames who are online now: \n";
@@ -371,7 +368,7 @@ void printRights(){
 int main(){
     char buff[BUF_SIZE] = {0};
     printRights();
-    ClientManagement cm(5000,"127.0.0.1");
+    ClientManagement cm(5000,"155.246.130.60");
     cm.initialization();//call initialization
     cm.connection();//call connection
     cout << "Please Input your username:  ";//Asking for Inputing your Username
