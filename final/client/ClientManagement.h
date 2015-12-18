@@ -16,9 +16,9 @@
 /**
  * @Class：ClientManagement
  * @description: All data object and method object are definited in this Class.
-                 The data object include: IP, port, socket, Client, buffer, thread. 
-                 The method object in this class can complete the initialization, connection between client and server, 
-                 users log in, sending message, receiving message, broadcast, closing program, etc. 
+                 The data object include: IP, port, socket, Client, buffer, thread.
+                 The method object in this class can complete the initialization, connection between client and server,
+                 users log in, sending message, receiving message, broadcast, closing program, etc.
                  These methods can be realized in "client.cpp".
  * @author: Xuan Li, Zeyu Ni, Shuo Zhang
  * @version: 1.0,
@@ -42,9 +42,10 @@ public:
     void close();//definition close method
     void sendMessage(char* userlist);
     void boradcast();//definition boradcast method
+    int transferFile(char* userlist);//definition boradcast method
     void receiveMessage();//definition receiveMessage method
     virtual ~ClientManagement();//definition ~ClientManagement method for stopping chat
-    
+
     //function for Get and set ip address
     char* GetipAddress() {
         return ipAddress;
