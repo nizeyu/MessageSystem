@@ -146,7 +146,9 @@ public:
 
 	/**
     * @function: ClientThread
-    * @description: handle users broadcast request, sent the message to all users, and file transfer to appointed CtC
+    * @description: 1.handle send message to users
+    *               2.users broadcast request&sent the message to all users
+    *               3.file transfer to appointed C2C
     * @return: ClientThread
     * @author: Xuan Li, Zeyu Ni, Shuo Zhang
     * @version: 1.0
